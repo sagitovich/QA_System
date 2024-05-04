@@ -1,8 +1,8 @@
 # To read the PDF
 import PyPDF2
 # To analyze the PDF layout and extract text
-from pdfminer.high_level import extract_pages, extract_text
-from pdfminer.layout import LTTextContainer, LTChar, LTRect, LTFigure
+from pdfminer.high_level import extract_pages
+from pdfminer.layout import LTTextContainer, LTChar, LTFigure
 # To extract text from tables in PDF
 import pdfplumber
 # To extract the images from the PDFs
@@ -216,7 +216,7 @@ def pdf2txt(pdf_path):
                 if isinstance(element, LTFigure):
                     # Crop the image from PDF
                     crop_image(element, pageObj)
-                    # Convert the croped pdf to image
+                    # Convert the cropped pdf to image
                     convert_to_images('cropped_image.pdf')
                     # Extract the text from image
                     image_text = image_to_text('PDF_image.png')
