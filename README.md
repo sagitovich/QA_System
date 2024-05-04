@@ -9,15 +9,15 @@
 - virtualenv venv
 - source venv/bin/activate
 
-#                       library's for bot.py                         #
+#                       libraries for bot.py                         #
 
 - pip install pyTelegramBotAPI telebot python-dotenv 
 
-#                   library's for ai_system.py                       #
+#                   libraries for ai_system.py                       #
 
 - pip install GroQ 
 
-#                  library's for pdf_to_text.py                      #
+#                  libraries for pdf_to_text.py                      #
 
 - pip install pypdf2 pdfminer pdfplumber pillow pdf2image pytesseract
 
