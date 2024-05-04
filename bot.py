@@ -9,6 +9,9 @@ load_dotenv()
 TOKEN = os.getenv('TELEGRAM_TOKEN')
 bot = telebot.TeleBot(TOKEN)
 
+global flag
+global result
+
 
 @bot.message_handler(commands=['start'])
 def send_start(message):

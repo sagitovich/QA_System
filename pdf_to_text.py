@@ -12,6 +12,8 @@ from pdf2image import convert_from_path
 import pytesseract
 # To remove the additional created files
 import os
+
+
 # Create function to extract text
 
 
@@ -50,6 +52,7 @@ def extract_table(pdf_path, page_num, table_num):
 
     return table
 
+
 # Convert table into appropriate format
 
 
@@ -62,7 +65,7 @@ def table_converter(table):
         cleaned_row = [item.replace(
             '\n', ' ') if item is not None and '\n' in item else 'None' if item is None else item for item in row]
         # Convert the table into a string
-        table_string += ('|'+'|'.join(cleaned_row)+'|'+'\n')
+        table_string += ('|' + '|'.join(cleaned_row) + '|' + '\n')
     # Removing the last line break
     table_string = table_string[:-1]
     return table_string
@@ -80,6 +83,7 @@ def is_element_inside_any_table(element, page, tables):
             return True
     return False
 
+
 # Function to find the table for a given element
 
 
@@ -93,6 +97,8 @@ def find_table_for_element(element, page, tables):
         if tx0 <= x0 <= x1 <= tx1 and ty0 <= y0 <= y1 <= ty1:
             return i  # Return the index of the table
     return None
+
+
 # Create a function to crop the image elements from PDFs
 
 
@@ -112,11 +118,12 @@ def crop_image(element, pageObj):
 
 
 # Create a function to convert the PDF to images
-def convert_to_images(input_file,):
+def convert_to_images(input_file, ):
     images = convert_from_path(input_file)
     image = images[0]
     output_file = 'PDF_image.png'
     image.save(output_file, 'PNG')
+
 
 # Create a function to read text from images
 
@@ -130,10 +137,9 @@ def image_to_text(image_path):
 
 
 def pdf2txt(pdf_path):
-
     try:
         os.remove('result.txt')
-    except:
+    except ...:
         pass
 
     # Create a pdf file object
@@ -144,7 +150,6 @@ def pdf2txt(pdf_path):
     text_per_page = {}
     # Create a boolean variable for image detection
     image_flag = False
-
 
     # We extract the pages from the PDF
     for pagenum, page in enumerate(extract_pages(pdf_path)):
@@ -192,7 +197,7 @@ def pdf2txt(pdf_path):
             else:
                 if is_element_inside_any_table(element, page, tables):
                     table_found = find_table_for_element(element, page, tables)
-                    if table_found == table_in_page and table_found != None:
+                    if table_found == table_in_page and table_found is not None:
                         page_content.append(text_from_tables[table_in_page])
                         page_text.append('table')
                         line_format.append('table')
@@ -229,9 +234,9 @@ def pdf2txt(pdf_path):
                     image_flag = True
 
         # Create the key of the dictionary
-        dctkey = 'Page_'+str(pagenum)
+        dctkey = 'Page_' + str(pagenum)
         # Add the list of list as value of the page key
-        text_per_page[dctkey] = [page_text, line_format, text_from_images,text_from_tables, page_content]
+        text_per_page[dctkey] = [page_text, line_format, text_from_images, text_from_tables, page_content]
 
     # Close the pdf file object
     pdfFileObj.close()
@@ -239,7 +244,7 @@ def pdf2txt(pdf_path):
     if image_flag:
         os.remove('cropped_image.pdf')
         os.remove('PDF_image.png')
-        
+
     result = ''
     for pagenum, page in enumerate(extract_pages(pdf_path)):
         result += ''.join(text_per_page[f'Page_{pagenum}'][4])
