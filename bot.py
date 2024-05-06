@@ -10,7 +10,7 @@ TOKEN = os.getenv('TELEGRAM_TOKEN')
 bot = telebot.TeleBot(TOKEN)
 
 global flag
-global result
+global text
 
 
 @bot.message_handler(commands=['start'])
@@ -19,6 +19,7 @@ def send_start(message):
     bot.send_message(
         message.chat.id, 'Бот готов к работе!\nОтправьте файл для начала.')
     flag = False
+    global text
 
 
 @bot.message_handler(commands=['stop'])
@@ -32,13 +33,13 @@ def send_end(message):
 @bot.message_handler(func=lambda _: True)
 def msg_control(message):
     global flag
-    global result
+    global text
 
-    if ('result' not in globals()) or (not flag):    # если файл не принят
+    if ('text' not in globals()) or (not flag):    # если файл не принят
         bot.delete_message(message.chat.id, message.message_id)
 
     else:
-        response = asyncio.run(run_qa_system(result, message.text))
+        response = asyncio.run(run_qa_system(text, message.text))
         bot.send_message(message.chat.id, response)
 
 
@@ -47,7 +48,9 @@ def handle_docs(message):
     try:
         chat_id = message.chat.id
         global flag
-        global result
+        global text
+
+        print('Text in work...')
 
         if message.document.mime_type == 'application/pdf':
             file_info = bot.get_file(message.document.file_id)
@@ -57,10 +60,10 @@ def handle_docs(message):
 
             with open('input.pdf', 'wb') as file:
                 file.write(downloaded_file)
-            result = pdf2txt('input.pdf')
+            text = pdf2txt('input.pdf')
 
             with open('result.txt', 'w') as f:
-                f.write(result)
+                f.write(text)
 
             doc = open('result.txt', 'rb')
             bot.send_document(chat_id, doc)
@@ -73,7 +76,7 @@ def handle_docs(message):
             downloaded_file = bot.download_file(file_info.file_path)
             bot.send_message(
                 message.chat.id, 'Обрабатываю файл...')
-            result = downloaded_file.decode('utf-8')
+            text = downloaded_file.decode('utf-8')
             bot.send_message(
                 chat_id, 'Файл успешно обработан!\nБот готов к диалогу.')
             flag = True
