@@ -17,7 +17,7 @@ global text
 def send_start(message):
     global flag
     bot.send_message(
-        message.chat.id, 'Бот готов к работе!\nОтправьте файл для начала.')
+        message.chat.id, 'Бот готов к работе 🤖\n📎 Отправьте файл для начала 📎')
     flag = False
     global text
 
@@ -26,7 +26,7 @@ def send_start(message):
 def send_end(message):
     global flag
     bot.send_message(
-        message.chat.id, 'Диалог завершён.\nОтправьте файл для продолжения.')
+        message.chat.id, 'Диалог завершён️\n📎 Отправьте файл для продолжения 📎')
     flag = False
 
 
@@ -68,7 +68,7 @@ def handle_docs(message):
             doc = open('result.txt', 'rb')
             bot.send_document(chat_id, doc)
             bot.send_message(
-                chat_id, 'Файл успешно обработан!\nБот готов к диалогу.')
+                chat_id, 'Файл успешно обработан ✅\nБот готов к диалогу 💬')
             flag = True
 
         elif message.document.mime_type == 'text/plain':
@@ -78,17 +78,19 @@ def handle_docs(message):
                 message.chat.id, 'Обрабатываю файл...')
             text = downloaded_file.decode('utf-8')
             bot.send_message(
-                chat_id, 'Файл успешно обработан!\nБот готов к диалогу.')
+                chat_id, 'Файл успешно обработан ✅\nБот готов к диалогу 💬')
             flag = True
 
         else:
             bot.send_message(
-                message.chat.id, 'Пожалуйста, отправьте .pdf или .txt')
+                message.chat.id, '✖️Пожалуйста, отправьте .pdf или .txt ✖️')
             flag = False
             return
 
     except Exception as e:
-        bot.reply_to(message, str(e))
+        print(f"Caught exception: {type(e)}")
+        print(f"Error message: {str(e)}")
+        bot.reply_to(message, f"️⛔ ERROR ⛔️")
 
 
 bot.polling()

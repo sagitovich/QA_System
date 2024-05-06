@@ -139,7 +139,7 @@ def image_to_text(image_path):
 def pdf2txt(pdf_path):
     try:
         os.remove('result.txt')
-    except ...:
+    except FileNotFoundError:
         pass
 
     # Create a pdf file object
