@@ -1,6 +1,7 @@
 from ai_system import run_qa_system
 from pdf_to_text import pdf2txt
 from dotenv import load_dotenv
+from separation_txt import go
 import telebot
 import asyncio
 import os
@@ -19,7 +20,7 @@ def send_start(message):
     bot.send_message(
         message.chat.id, 'Бот готов к работе 🤖\n📎 Отправьте файл для начала 📎')
     flag = False
-    global text
+    # global text
 
 
 @bot.message_handler(commands=['stop'])
@@ -39,8 +40,26 @@ def msg_control(message):
         bot.delete_message(message.chat.id, message.message_id)
 
     else:
-        response = asyncio.run(run_qa_system(text, message.text))
-        bot.send_message(message.chat.id, response)
+        # Путь к директории с чанками
+        chunks_dir = 'output'
+        # Получаем список всех файлов в директории
+        chunks = os.listdir(chunks_dir)
+        # Сортируем список файлов, чтобы обрабатывать их в определенном порядке
+        chunks.sort()
+
+        responses = []
+        for chunk in chunks:
+            # Читаем каждый чанк
+            with open(os.path.join(chunks_dir, chunk), 'r') as file:
+                text_chunk = file.read()
+            # Запускаем систему AI на каждом чанке
+            response = asyncio.run(run_qa_system(text_chunk, message.text))
+            responses.append(response)
+
+        final_answer = asyncio.run(run_qa_system('\n'.join(responses), 'Объедини ответы в один.'))
+
+        # Объединяем все ответы в один и отправляем пользователю
+        bot.send_message(message.chat.id, final_answer)
 
 
 @bot.message_handler(content_types=['document'])
@@ -49,8 +68,6 @@ def handle_docs(message):
         chat_id = message.chat.id
         global flag
         global text
-
-        print('Text in work...')
 
         if message.document.mime_type == 'application/pdf':
             file_info = bot.get_file(message.document.file_id)
@@ -65,6 +82,8 @@ def handle_docs(message):
             with open('result.txt', 'w') as f:
                 f.write(text)
 
+            go('result.txt')
+
             doc = open('result.txt', 'rb')
             bot.send_document(chat_id, doc)
             bot.send_message(
@@ -77,6 +96,11 @@ def handle_docs(message):
             bot.send_message(
                 message.chat.id, 'Обрабатываю файл...')
             text = downloaded_file.decode('utf-8')
+
+            with open('result.txt', 'w') as f:
+                f.write(text)
+            go('result.txt')
+
             bot.send_message(
                 chat_id, 'Файл успешно обработан ✅\nБот готов к диалогу 💬')
             flag = True
