@@ -48,6 +48,7 @@ def msg_control(message):
         chunks.sort()
 
         user_cntxt = ('Ответь на следующий вопрос, используя только информацию из предоставленного контекста. '
+                      'Ответь на том же языке, на котором задан вопрос.'
                       'Если ты не можешь найти ответ на вопрос в заданной области, напиши в ответ: '
                       '"Вопрос не соответствует контексту". Вопрос:')
 
@@ -61,11 +62,10 @@ def msg_control(message):
             responses.append(response)
 
         responses = set(responses)
-        print(f'1234567{responses}')
 
         if len(responses) > 1:
             msg = ('Сделай из всех ответов один общий, красивый, структурированный ответ. Исключи повторы.'
-                   'Ответ предоставь на том же языке, что и запрос.')
+                   'Ответь на том же языке, на котором задан вопрос.')
             user_new_cntxt = ''
             final_answer = asyncio.run(run_qa_system('\n'.join(responses), user_new_cntxt, msg))
 
@@ -128,7 +128,7 @@ def handle_docs(message):
     except Exception as e:
         print(f"Caught exception: {type(e)}")
         print(f"Error message: {str(e)}")
-        bot.reply_to(message, f"️⛔ ERROR ⛔️")
+        bot.reply_to(message, f'️⛔ ERROR ⛔')
 
 
 bot.polling()
