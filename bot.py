@@ -47,19 +47,33 @@ def msg_control(message):
         # Сортируем список файлов, чтобы обрабатывать их в определенном порядке
         chunks.sort()
 
+        user_cntxt = ('Ответь на следующий вопрос, используя только информацию из предоставленного контекста. '
+                      'Если ты не можешь найти ответ на вопрос в заданной области, напиши в ответ: '
+                      '"Вопрос не соответствует контексту". Вопрос:')
+
         responses = []
         for chunk in chunks:
             # Читаем каждый чанк
             with open(os.path.join(chunks_dir, chunk), 'r') as file:
                 text_chunk = file.read()
             # Запускаем систему AI на каждом чанке
-            response = asyncio.run(run_qa_system(text_chunk, message.text))
+            response = asyncio.run(run_qa_system(text_chunk, user_cntxt, message.text))
             responses.append(response)
 
-        final_answer = asyncio.run(run_qa_system('\n'.join(responses), 'Объедини ответы в один.'))
+        responses = set(responses)
+        print(f'1234567{responses}')
 
-        # Объединяем все ответы в один и отправляем пользователю
-        bot.send_message(message.chat.id, final_answer)
+        if len(responses) > 1:
+            msg = ('Сделай из всех ответов один общий, красивый, структурированный ответ. Исключи повторы.'
+                   'Ответ предоставь на том же языке, что и запрос.')
+            user_new_cntxt = ''
+            final_answer = asyncio.run(run_qa_system('\n'.join(responses), user_new_cntxt, msg))
+
+            # Объединяем все ответы в один и отправляем пользователю
+            bot.send_message(message.chat.id, final_answer)
+        else:
+            final_answer = 'Вопрос не соответствует контексту.'
+            bot.send_message(message.chat.id, final_answer)
 
 
 @bot.message_handler(content_types=['document'])

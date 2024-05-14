@@ -6,7 +6,7 @@ load_dotenv()
 API_EKY = os.getenv('GROQ_API_KEY')
 
 
-async def qa_system(context, question):
+async def qa_system(context, user_context, question):
 
     client = Groq(
         api_key=API_EKY)
@@ -20,9 +20,7 @@ async def qa_system(context, question):
             },
             {
                 "role": "user",
-                "content": 'Ответь на следующий вопрос, используя только информацию из предоставленного контекста.' 
-                + 'Если ты не можешь найти ответ на вопрос в заданной области, напиши в ответ:' 
-                + '"Вопрос не соответствует контексту". Вопрос:' + question
+                "content": user_context + question
             }
         ],
         temperature=0.1,
@@ -36,6 +34,8 @@ async def qa_system(context, question):
     return f'\n{response.choices[0].message.content}'
 
 
-async def run_qa_system(context, question):
-    response = await qa_system(context, question)
+async def run_qa_system(context, user_context, question):
+    response = await qa_system(context, user_context, question)
     return response
+
+
