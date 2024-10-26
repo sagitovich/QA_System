@@ -1,3 +1,7 @@
+# ИИ-система "Вопрос-ответ". # 
+Ответы на вопросы берутся из контекста отправляемого .docx/.pdf документа.
+
+
 #                               start                                #
 - curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
 - python get-pip.py (python3 get-pip.py)
